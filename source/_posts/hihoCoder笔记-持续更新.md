@@ -10,7 +10,7 @@ tags:
 
 ## 描述
 - There are N queens in an infinite chessboard. We say two queens may attack each other if they are in the same vertical line, horizontal line or diagonal line even if there are other queens sitting between them.
-- Now given the positions of the queens, find out how many pairs may attack each other?
+- Now given the positions of the queens, find out how many pairs may attack each other?<!--more-->
 
 ## 输入
 * The first line contains an integer N.
@@ -151,3 +151,96 @@ int main() {
 }
  ```
 
+# #1499:A Box of Coins
+- 时间限制:10000ms  
+- 单点时限:1000ms  
+- 内存限制:256MB
+
+##	 描述
+Little Hi has a box which consists of 2xN cells as illustrated below.  
+
+ ```
++----+----+----+----+----+----+
+| A1 | A2 | A3 | A4 | .. | AN |
++----+----+----+----+----+----+
+| B1 | B2 | B3 | B4 | .. | BN |
++----+----+----+----+----+----+ 
+ ```
+There are some coins in each cell. For the first row the amounts of coins are A1, A2, ... AN and for the second row the amounts are B1, B2, ... BN.
+
+ 
+Each second Little Hi can pick one coin from a cell and put it into an adjacent cell. (Two cells are adjacent if they share a common side. For example, A1 and A2 are adjacent; A1 and B1 are adjacent; A1 and B2 are not adjacent.)
+
+Now Little Hi wants that each cell has equal number of coins by moving the coins. He wants to know the minimum number of seconds he needs to accomplish it.
+
+## 输入
+* The first line contains an integer, N. 2 <= N <= 100000  
+* Then follows N lines. Each line contains 2 integers Ai and Bi. (0 <= Ai, Bi <= 2000000000)  
+* It is guaranteed that the total amount of coins in the box is no more than 2000000000 and is a multiple of 2N.
+
+## 输出
+The minimum number of seconds.
+
+### 样例输入
+> 2  
+> 3 4  
+> 6 7
+
+### 样例输出
+> 4
+
+## 思路
+一开始想的思路是，每次找到最多硬币的格子，然后往旁边的硬币数最少的格子放，这样不停的迭代，总能放完，样例可以通过，但是这个方案不可取，因为没法保证用时最短，而且会出现死循环的情况。参照别人的从一边开始，先判断上下两个是否有大于平均数的，如果都大于平均数，就分别放右边的格子放，使之等于平均数；如果一个大于一个小于，则先上下组内互匀，然后再分别跟右边交换达到平均数；如果都小于，那就分别从右边拿。用这个思路就可以*AC*了。
+
+## 代码
+ ```python
+def func():
+    n = int(raw_input())
+    A=[]
+    B=[]
+    sum = 0
+    for i in range(n):
+        str= map(int, raw_input().split())
+        a =str[0]
+        b = str[1]
+        sum += (a+b)
+        A.append(a)
+        B.append(b)
+    avg =sum/2/n
+    count = 0
+    for i in range(len(A)):
+        if max(A[i],B[i]) >avg:
+            max_val = max(A[i],B[i])
+            min_val = min(A[i],B[i])
+            sub1 = max(A[i],B[i]) - avg
+            sub2 = avg - min(A[i],B[i])
+            if sub2 > 0:
+                if sub1 > sub2:
+                    count += abs(sub2)
+                    if min_val == A[i]:
+                        A[i] = avg
+                        B[i] -= sub2
+                    else:
+                        B[i] = avg
+                        A[i] -= sub2
+                else:
+                    count += abs(sub1)
+                    if max_val == A[i]:
+                        A[i] = avg
+                        B[i] += sub1
+                    else:
+                        B[i] = avg
+                        A[i] += sub1
+        sub = avg -A[i]
+        if sub !=0 :
+            A[i+1] -= sub
+            count += abs(sub)
+        sub = avg - B[i]
+        if sub != 0:
+            B[i + 1] -= sub
+            count += abs(sub)
+    return count
+
+if __name__ == '__main__':
+    print int(func())
+ ```
